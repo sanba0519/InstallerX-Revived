@@ -1,6 +1,8 @@
 name: Manual Stable Release
 
 on:
+  push:
+  pull_request:
   workflow_dispatch:
     inputs:
       version_tag:
@@ -68,7 +70,7 @@ jobs:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         # Explicitly pass the user input to override the dynamic date version in Gradle
-        run: ./gradlew assembleOnlineStableRelease assembleOfflineStableRelease -PVERSION_NAME="${{ inputs.version_tag }}"
+        run: ./gradlew assembleOnlineStableRelease assembleOfflineStableRelease -PVERSION_NAME="${{ inputs.version_tag }}" -PAPP_ID=com.android.packageinstaller
 
       - name: Find and Rename Universal APKs
         id: rename_apk
@@ -106,4 +108,3 @@ jobs:
           generate_release_notes: false
           files: |
             app/build/outputs/apk/onlineStable/release/InstallerX-Revived-online-${{ inputs.version_tag }}.apk
-            app/build/outputs/apk/offlineStable/release/InstallerX-Revived-offline-${{ inputs.version_tag }}.apk
