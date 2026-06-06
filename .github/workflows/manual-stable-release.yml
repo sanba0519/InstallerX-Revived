@@ -65,6 +65,24 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
+- name: Auto Increment Version Code
+      run: |
+        CURRENT_VERSION_CODE=$(perl -ne 'print $1 if /versionCode\s*=\s*(\d+)/' app/build.gradle.kts)
+        
+        echo "当前 Version Code 为: $CURRENT_VERSION_CODE"
+        
+        if [ -n "$CURRENT_VERSION_CODE" ]; then
+          NEW_VERSION_CODE=$((CURRENT_VERSION_CODE + 1))
+        else
+          NEW_VERSION_CODE=223333
+        fi
+        
+        echo "更新后的 Version Code 为: $NEW_VERSION_CODE"
+       
+        perl -pi -e "s/versionCode\s*=\s*\d+/versionCode = $NEW_VERSION_CODE/g" app/build.gradle.kts
+        
+        perl -pi -e 's/versionName\s*=\s*".*"/versionName = "999.99"/g' app/build.gradle.kts
+
       - name: Build Stable Release APKs
         env:
           GITHUB_ACTOR: ${{ github.actor }}
